@@ -1,3 +1,5 @@
+setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Syntax")
+
 #Pre-Processing
 
 #Load Data
@@ -15,3 +17,6 @@
 # 3. save
 
 #commit 
+
+git config --global user.email "selinadang97@yahoo.de"
+git config --global user.name "Selina Nguyen"
