@@ -1,0 +1,52 @@
+ICPSRCode,POAbrv,South11,South13,South17,REGION4,REGION7,fips,Name
+1,CT,0,0,0,Northeast,Northeast,9000,Connecticut
+2,ME,0,0,0,Northeast,Northeast,23000,Maine
+3,MA,0,0,0,Northeast,Northeast,25000,Massachusetts
+4,NH,0,0,0,Northeast,Northeast,33000,New Hampshire
+5,RI,0,0,0,Northeast,Northeast,44000,Rhode Island
+6,VT,0,0,0,Northeast,Northeast,50000,Vermont
+11,DE,0,0,1,Northeast,Middle Atlantic,10000,Delaware
+12,NJ,0,0,0,Northeast,Middle Atlantic,34000,New Jersey
+13,NY,0,0,0,Northeast,Middle Atlantic,36000,New York
+14,PA,0,0,0,Northeast,Middle Atlantic,42000,Pennsylvania
+21,IL,0,0,0,Midwest,East Central,17000,Illinois
+22,IN,0,0,0,Midwest,East Central,18000,Indiana
+23,MI,0,0,0,Midwest,East Central,26000,Michigan
+24,OH,0,0,0,Midwest,East Central,39000,Ohio
+25,WI,0,0,0,Midwest,West Central,55000,Wisconsin
+31,IA,0,0,0,Midwest,West Central,19000,Iowa
+32,KS,0,0,0,Midwest,West Central,20000,Kansas
+33,MN,0,0,0,Midwest,West Central,27000,Minnesota
+34,MO,0,0,1,Midwest,West Central,29000,Missouri
+35,NE,0,0,0,Midwest,West Central,31000,Nebraska
+36,ND,0,0,0,Midwest,West Central,38000,North Dakota
+37,SD,0,0,0,Midwest,West Central,46000,South Dakota
+40,VA,1,1,1,South,South and Southwest,51000,Virginia
+41,AL,1,1,1,South,South and Southwest,1000,Alabama
+42,AR,1,1,1,South,South and Southwest,5000,Arkansas
+43,FL,1,1,1,South,South and Southwest,12000,Florida
+44,GA,1,1,1,South,South and Southwest,13000,Georgia
+45,LA,1,1,1,South,South and Southwest,22000,Louisiana
+46,MS,1,1,1,South,South and Southwest,28000,Mississippi
+47,NC,1,1,1,South,South and Southwest,37000,North Carolina
+48,SC,1,1,1,South,South and Southwest,45000,South Carolina
+49,TX,1,1,1,South,South and Southwest,48000,Texas
+51,KY,0,1,1,South,South and Southwest,21000,Kentucky
+52,MD,0,0,1,Northeast,Middle Atlantic,24000,Maryland
+53,OK,0,1,1,South,South and Southwest,40000,Oklahoma
+54,TN,1,1,1,South,South and Southwest,47000,Tennessee
+55,DC,0,0,0,,,11000,District of Columbia
+56,WV,0,0,1,Northeast,Middle Atlantic,54000,West Virginia
+61,AZ,0,0,0,West,Rocky Mountain,4000,Arizona
+62,CO,0,0,0,West,Rocky Mountain,8000,Colorado
+63,ID,0,0,0,West,Rocky Mountain,16000,Idaho
+64,MT,0,0,0,West,Rocky Mountain,30000,Montana
+65,NV,0,0,0,West,Rocky Mountain,32000,Nevada
+66,NM,0,0,0,West,Rocky Mountain,35000,New Mexico
+67,UT,0,0,0,West,Rocky Mountain,49000,Utah
+68,WY,0,0,0,West,Rocky Mountain,56000,Wyoming
+71,CA,0,0,0,West,Pacific Coast,6000,California
+72,OR,0,0,0,West,Pacific Coast,41000,Oregon
+73,WA,0,0,0,West,Pacific Coast,53000,Washington
+81,AK,0,0,0,West,,2000,Alaska
+82,HI,0,0,0,West,,15000,Hawaii
