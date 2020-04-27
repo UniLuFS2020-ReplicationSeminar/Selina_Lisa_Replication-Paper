@@ -20,3 +20,7 @@ setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/
 
 git config --global user.email "selinadang97@yahoo.de"
 git config --global user.name "Selina Nguyen"
+
+
+###hallo
+dfkjdlaf
