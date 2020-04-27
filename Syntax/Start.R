@@ -4,8 +4,29 @@ setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/
 
 #Load Data
 
-# load("tydiverse")
-# dat <- load(file = here::here("DATASET DIRECTORY", "DATAFRAME"))
+
+library(scales)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+library(dgo)
+library(tidyverse)
+
+install.packages("rio")
+library("rio")
+install.packages("here")
+library(here)
+
+rio::import(file= here::here("Data", "shaped.Rdata"))
+  
+data1 <- rio::import(file= here::here("Data", "shaped.Rdata"))
+
+
+summary(data1)
+view(data1)
+
+
 
 # 1. select key variables -------------------------------------------------
 # 1. select only the key variables
@@ -24,3 +45,9 @@ git config --global user.name "Selina Nguyen"
 
 ###hallo
 dfkjdlaf
+hdlfajdflk
+kfjaldkfj
+kdfjalf
+kjflkdjfl
+jdfklajf
+
