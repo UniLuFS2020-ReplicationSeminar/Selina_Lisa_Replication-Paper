@@ -43,12 +43,3 @@ view(data1)
 #commit 
 
 
-
-
-###hallo
-dfkjdlaf
-hdlfajdflk
-kfjaldkfj
-kdfjalf
-kjflkdjfl
-jdfklajf
