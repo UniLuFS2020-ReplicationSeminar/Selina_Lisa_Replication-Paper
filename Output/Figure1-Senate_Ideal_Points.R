@@ -28,6 +28,19 @@ ideals <- filter(ideals, congress <= 133,
                  !(domain == "Social" & congress < 85))
 
 # Normalize scores (using Z-score: Z = (x-mean)/sd)
+ideals %>% 
+  group_by(domain) %>% 
+  summarize(mean = mean(dynamic_ideal, na.rm = T), sd = sd(dynamic_ideal, na.rm = T)) %>% 
+  mutate(norm.dynamic_ideal = ((dynamic_ideal - mean) / sd))
+
+ideals %>% 
+  group_by(domain) %>% 
+  summarize(mean = mean(dynamic_ideal, na.rm = T)) %>%
+  mutate(dynamic_ideal = ((ideals$dynamic_ideal - mean) / ideals$dynamic_ideal_sd))
+
+mean(ideals$dynamic_ideal)
+sd(ideals$dynamic_ideal)
+
 # := means update the column dynamic_ideal by the normalized dynamic_ideal
 ideals[, dynamic_ideal := (dynamic_ideal - mean(dynamic_ideal)) / sd(dynamic_ideal),
        by = c("domain")] #Does this mean update column by domain?
