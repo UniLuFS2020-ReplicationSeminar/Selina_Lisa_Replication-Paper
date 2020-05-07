@@ -2,27 +2,25 @@ library(data.table)
 library(ggplot2)
 install.packages("readr")
 install.packages("haven")
-library(haven)
 library(readr)
 library(tidyverse)
 library(data.table)
+library(dplyr)
 
+#set wd
+here::here()
 
-#not sure what this serves
-DROPBOX_PATH = '.'
-DATA_PATH = '.'
-ESTIMATE_PLOT_PATH = '.'
+#load and rename the datasets
+setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Data")
 
-#rename the datasets
-paths = c("Economic" = "senate-econ.dta",
-          "Social" = "senate-social.dta",
-          "Racial" = "senate-race.dta")
+Economic <- get(load("senate-econ.RData"))
+Social <- get(load("senate-social.RData"))
+Racial <- get(load("senate-race.RData"))
 
-#Is this to load the datasets?
-ideals = lapply(paths, function(p) haven::read_dta(file.path(DATA_PATH, p)))
+remove(table)
 
-ideals = rbindlist(ideals, idcol = "domain")
-
+#merge datasets into one called ideals, add a column which identifies from which dataset the values came from
+ideals <- bind_rows(Economic = Economic, Social = Social, Racial = Racial, .id = "domain")
 
 #filtering out the dataset to acquire only data from the 85th to the 113th Congress (p.137)
 # [] is subsetting/filterin in base R
