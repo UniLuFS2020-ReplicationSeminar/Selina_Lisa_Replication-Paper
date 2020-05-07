@@ -22,13 +22,10 @@ remove(table)
 #merge datasets into one called ideals, add a column which identifies from which dataset the values came from
 ideals <- bind_rows(Economic = Economic, Social = Social, Racial = Racial, .id = "domain")
 
-#filtering out the dataset to acquire only data from the 85th to the 113th Congress (p.137)
-# [] is subsetting/filterin in base R
-ideals = ideals[congress <= 113]
-ideals = ideals[!(domain == 'Racial' & congress < 85)]
-ideals = ideals[!(domain == 'Social' & congress < 85)]
-#Why is there no filtering for the Economic roll call data? Is it already filtered?
-
+#filtering out the dataset to acquire only data from the 85th for the racial and social domain, and to the 113th Congress for all domains (p.137)
+ideals <- filter(ideals, congress <= 133,
+                 !(domain == "Racial" & congress < 85),
+                 !(domain == "Social" & congress < 85))
 
 # Normalize scores (using Z-score: Z = (x-mean)/sd)
 # := means update the column dynamic_ideal by the normalized dynamic_ideal
