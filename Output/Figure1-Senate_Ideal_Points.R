@@ -47,7 +47,7 @@ ideals <- ideals %>%
 
 party_means <- ideals %>%
   group_by(domain, party_code, congress) %>% 
-  mutate(mean_ideal = mean(dynamic_ideal))
+  mutate(mean_ideal = mean(dynamic_ideal_norm))
 
 #     party codes: 100 for Democrats, 200 for Republicans, 212 for Conservatives, 328 for Independent
 p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
@@ -67,6 +67,13 @@ ideals <- ideals %>%
 ideals <- ideals %>% 
   filter(!(two_party == F))
 
+#Take the within-state-party average, for the case in which there's more than
+# one senator/member in a state-congress pair.    
+ideals <- ideals %>% 
+  group_by(congress, state_abbrev, party_code) %>% 
+  mutate(dynamic_ideal_norm = mean(dynamic_ideal_norm))
+  
+
 mean_state_diff = function(ideal_points, time_var = "congress") {
   ideals = copy(ideal_points)
   
@@ -85,8 +92,7 @@ mean_state_diff = function(ideal_points, time_var = "congress") {
   
   # Take the within-state-party average, for the case in which there's more than
   # one senator/member in a state-congress pair.
-  ideals = ideals[, .(dynamic_ideal = mean(dynamic_ideal)), by = c("congress",
-                                                                   "state_abbrev", "party_code")]
+  # ideals = ideals[, .(dynamic_ideal = mean(dynamic_ideal)), by = c("congress", "state_abbrev", "party_code")]
   
   # Take the within-state differences between parties in each congress
   setkeyv(ideals, c("congress", "state_abbrev", "party_code"))
