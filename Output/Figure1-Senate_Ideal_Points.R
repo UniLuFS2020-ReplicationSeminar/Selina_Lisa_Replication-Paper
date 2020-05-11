@@ -37,17 +37,23 @@ mean(ideals$dynamic_ideal_norm) # ~0
 sd(ideals$dynamic_ideal_norm) # 1
 
 # Drop presidents
-# Subsetting again with []: filtering president, because they represent not one state, but the country
-ideals = ideals[state_abbrev != "USA"]
+ideals <- filter(ideals, !(state_abbrev == "USA"))
+
 
 
 # Check polarity
-party_means = ideals[, .(mean_ideal = mean(dynamic_ideal)) , by = c("domain", "party_code", "congress")] #create a list with .() -> same as list()
-party_means[, party_code := factor(party_code)] #through factor() change party_code to a nominal variable
+ideals <- ideals %>% 
+  mutate(party_code = factor(party_code))
 
-p = ggplot(party_means[party_code %in% c(100, 200)]) + #party codes: 100 for Democrats, 200 for Repiblicans and 328 for Independent
-  geom_line(aes(congress, mean_ideal, color = party_code)) +
+party_means <- ideals %>%
+  group_by(domain, party_code, congress) %>% 
+  mutate(mean_ideal = mean(dynamic_ideal))
+
+#     party codes: 100 for Democrats, 200 for Repiblicans, 212 for Conservatives, 328 for Independent
+p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
+  geom_line(mapping = aes(x = congress, y = mean_ideal, color = party_code)) +
   facet_wrap(~ domain)
+
 
 mean_state_diff = function(ideal_points, time_var = "congress") {
   ideals = copy(ideal_points)
@@ -81,7 +87,35 @@ mean_state_diff = function(ideal_points, time_var = "congress") {
   mean_diffs
 }
 
+mean_diff_by_domain = function(ideals) {
+  .ideals = copy(ideals)
+  econ_diff = mean_state_diff(.ideals[domain == 'Economic'])
+  race_diff = mean_state_diff(.ideals[domain == 'Racial'])
+  social_diff = mean_state_diff(.ideals[domain == 'Social'])
   
+  diffs = rbindlist(list("Economic" = econ_diff,
+                         "Racial" = race_diff,
+                         "Social" = social_diff),
+                    idcol = "Domain", fill = TRUE)
+  
+  congresses = readRDS(file.path(DATA_PATH, "congresses.Rds"))
+  merge(diffs, congresses, by.x = "congress", by.y = "cong", all.x = TRUE, all.y = FALSE)
+}
+
+mean_diffs =  mean_diff_by_domain(ideals)
+
+# Flip for same polarity as previous estimates
+mean_diffs[, mean_diff_score := mean_diff_score * -1]
+
+p = ggplot(mean_diffs) +
+  geom_line(aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
+  scale_linetype_manual(values=c("solid", "dashed", "dotdash")) +
+  scale_y_continuous("Avg. Difference") + # , limits = c(-.2, 2.6)) +
+  scale_x_continuous("Year", limits = c(1945, 2017), breaks = seq(1950, 2010, 10)) +
+  ggtitle("Senate Ideal Points") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
   
   
 ```
