@@ -49,27 +49,39 @@ party_means <- ideals %>%
   group_by(domain, party_code, congress) %>% 
   mutate(mean_ideal = mean(dynamic_ideal))
 
-#     party codes: 100 for Democrats, 200 for Repiblicans, 212 for Conservatives, 328 for Independent
+#     party codes: 100 for Democrats, 200 for Republicans, 212 for Conservatives, 328 for Independent
 p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   geom_line(mapping = aes(x = congress, y = mean_ideal, color = party_code)) +
   facet_wrap(~ domain)
 
 
+#filter out the Conservative and Independent party members
+ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
+
+#filter out the states that are represented by senators of only one party
+ideals <- ideals %>% 
+  group_by(congress, state_abbrev) %>% 
+  mutate(two_party = length(unique(party_code)) > 1)
+
+#keep the states represented by both parties
+ideals <- ideals %>% 
+  filter(!(two_party == F))
+
 mean_state_diff = function(ideal_points, time_var = "congress") {
   ideals = copy(ideal_points)
   
   # Drop any NA states and NA ideal points
-  ideals = ideals[!is.na(get('state_abbrev')) & !is.na(get('dynamic_ideal'))]
+  # ideals = ideals[!is.na(get('state_abbrev')) & !is.na(get('dynamic_ideal'))]
   
   # Keep Democratic and Republican members of Congress
-  ideals = ideals[party_code %in% c(100, 200)]
+  # ideals = ideals[party_code %in% c(100, 200)]
   
   # Create an indicator for the number of parties (one or two) represented by a
   # state's delegations
-  ideals[, two_party := length(unique(party_code)) > 1, by = c('congress', 'state_abbrev')]
+  #ideals[, two_party := length(unique(party_code)) > 1, by = c('congress', 'state_abbrev')]
   
   # Keep the states represented by both parties
-  ideals = ideals[get("two_party"), ]
+  #ideals = ideals[get("two_party"), ]
   
   # Take the within-state-party average, for the case in which there's more than
   # one senator/member in a state-congress pair.
@@ -98,7 +110,7 @@ mean_diff_by_domain = function(ideals) {
                          "Social" = social_diff),
                     idcol = "Domain", fill = TRUE)
   
-  congresses = readRDS(file.path(DATA_PATH, "congresses.Rds"))
+  congresses = readRDS("congresses.Rds")
   merge(diffs, congresses, by.x = "congress", by.y = "cong", all.x = TRUE, all.y = FALSE)
 }
 
