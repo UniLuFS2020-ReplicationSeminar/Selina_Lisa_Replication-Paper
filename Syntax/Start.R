@@ -26,6 +26,12 @@ data1 <- rio::import(file= here::here("Data", "shaped.Rdata"))
 summary(data1)
 view(data1)
 
+require(readr)
+install.packages("haven")
+require(haven)
+
+
+
 
 
 # 1. select key variables -------------------------------------------------
