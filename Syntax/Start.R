@@ -1,8 +1,10 @@
-setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Syntax")
-
 #Pre-Processing
 
 #Load Data
+
+
+# load("tydiverse")
+# dat <- load(file = here::here("DATASET DIRECTORY", "DATAFRAME"))
 
 
 library(scales)
@@ -21,7 +23,7 @@ library(here)
 rio::import(file= here::here("Data", "shaped.Rdata"))
   
 data1 <- rio::import(file= here::here("Data", "shaped.Rdata"))
-
+data1 <- load(file = here::here("Data", "shaped.Rdata"))
 
 summary(data1)
 view(data1)
@@ -29,6 +31,7 @@ view(data1)
 require(readr)
 install.packages("haven")
 require(haven)
+
 
 
 
@@ -45,15 +48,4 @@ require(haven)
 
 #commit 
 
-git config --global user.email "selinadang97@yahoo.de"
-git config --global user.name "Selina Nguyen"
-
-
-###hallo
-dfkjdlaf
-hdlfajdflk
-kfjaldkfj
-kdfjalf
-kjflkdjfl
-jdfklajf
 
