@@ -72,68 +72,56 @@ ideals <- ideals %>%
 ideals <- ideals %>% 
   group_by(congress, state_abbrev, party_code) %>% 
   mutate(dynamic_ideal_norm = mean(dynamic_ideal_norm))
-  
 
-mean_state_diff = function(ideal_points, time_var = "congress") {
+
+# Take the within-state differences between parties in each congress
+mean_state_diff <- function(ideal_points, time_var = "congress") {
   ideals = copy(ideal_points)
-  
-  # Drop any NA states and NA ideal points
-  # ideals = ideals[!is.na(get('state_abbrev')) & !is.na(get('dynamic_ideal'))]
-  
-  # Keep Democratic and Republican members of Congress
-  # ideals = ideals[party_code %in% c(100, 200)]
-  
-  # Create an indicator for the number of parties (one or two) represented by a
-  # state's delegations
-  #ideals[, two_party := length(unique(party_code)) > 1, by = c('congress', 'state_abbrev')]
-  
-  # Keep the states represented by both parties
-  #ideals = ideals[get("two_party"), ]
-  
-  # Take the within-state-party average, for the case in which there's more than
-  # one senator/member in a state-congress pair.
-  # ideals = ideals[, .(dynamic_ideal = mean(dynamic_ideal)), by = c("congress", "state_abbrev", "party_code")]
-  
-  # Take the within-state differences between parties in each congress
-  setkeyv(ideals, c("congress", "state_abbrev", "party_code"))
-  diffs = ideals[, .(state_abbrev = first(state_abbrev), party_code = first(party_code), diff_score =
-                       dynamic_ideal[1] - dynamic_ideal[2], n = .N), by = c("congress", "state_abbrev")]
-  
-  mean_diffs = diffs[, .(mean_diff_score = mean(diff_score, na.rm = TRUE), n = .N), by =
-                       c(time_var)]
-  
+  setDT(ideals, key = c("congress", "state_abbrev", "party_code"))
+  diffs <- ideals %>% 
+    group_by(congress, state_abbrev) %>% 
+    mutate(party_code = first(party_code),
+           diff_score = dynamic_ideal[1] - dynamic_ideal[2], n = .N)
+  mean_diffs <- diffs %>% 
+    group_by(congress) %>% 
+    mutate(mean_diff_score = mean(diff_score, na.rm = T), n = .N)
   mean_diffs
 }
+    
 
 mean_diff_by_domain = function(ideals) {
   .ideals = copy(ideals)
-  econ_diff = mean_state_diff(.ideals[domain == 'Economic'])
-  race_diff = mean_state_diff(.ideals[domain == 'Racial'])
-  social_diff = mean_state_diff(.ideals[domain == 'Social'])
+  econ_diff <- mean_state_diff(filter(.ideals, domain == "Economic"))
+  race_diff <- mean_state_diff(filter(.ideals, domain == "Racial"))
+  social_diff <- mean_state_diff(filter(.ideals, domain == "Social"))
   
   diffs = rbindlist(list("Economic" = econ_diff,
                          "Racial" = race_diff,
                          "Social" = social_diff),
-                    idcol = "Domain", fill = TRUE)
+                    idcol = "Domain", fill = T)
   
-  congresses = readRDS("congresses.Rds")
-  merge(diffs, congresses, by.x = "congress", by.y = "cong", all.x = TRUE, all.y = FALSE)
+  congresses <- readRDS("congresses.Rds")
+  merge(diffs, congresses, by.x = "congress", by.y = "cong", all.x = T, all.y = F)
 }
 
-mean_diffs =  mean_diff_by_domain(ideals)
+mean_diffs <- mean_diff_by_domain(ideals)
+
 
 # Flip for same polarity as previous estimates
-mean_diffs[, mean_diff_score := mean_diff_score * -1]
+mean_diffs <- mean_diffs %>% 
+  mutate(mean_diff_score = mean_diff_score * -1)
 
-p = ggplot(mean_diffs) +
-  geom_line(aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
+
+
+p2 <- ggplot(data = mean_diffs) +
+  geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash")) +
-  scale_y_continuous("Avg. Difference") + # , limits = c(-.2, 2.6)) +
+  scale_y_continuous("Avg. Difference", limits = c(-.2, 2.6)) +
   scale_x_continuous("Year", limits = c(1945, 2017), breaks = seq(1950, 2010, 10)) +
   ggtitle("Senate Ideal Points") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
-  
+p2
   
 ```

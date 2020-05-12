@@ -70,7 +70,8 @@ mean_state_diff = function(ideal_points, time_var = "congress") {
 
   # Take the within-state differences between parties in each congress
   setkeyv(ideals, c("congress", "state_abbrev", "party_code"))
-  diffs = ideals[, .(state_abbrev = first(state_abbrev), party_code = first(party_code), diff_score =
+  diffs = ideals[, .(#state_abbrev = first(state_abbrev), 
+    party_code = first(party_code), diff_score =
     dynamic_ideal[1] - dynamic_ideal[2], n = .N), by = c("congress", "state_abbrev")]
 
     mean_diffs = diffs[, .(mean_diff_score = mean(diff_score, na.rm = TRUE), n = .N), by =
