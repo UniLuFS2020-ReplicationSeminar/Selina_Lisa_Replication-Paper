@@ -1,0 +1,162 @@
+---
+title: "Exercise session 10 - Your Turn #2: Confounders"
+author: "Dr Andrea De Angelis"
+date: "5/5/2020"
+output: 
+  html_document: 
+    toc: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+```
+
+
+# Exercise
+Work in groups. 
+Imagine a DGP where `Y` depends on `X1`, `X2`, and a third variable `Z = rnorm(mean = 0, sd = 1)`.
+
+Can you estimate b1 correctly with this model?
+`lm(y ~ x1 + x2, data = dat)`
+
+# Solution
+
+## Set up
+
+```{r}
+set.seed(12345)   # This makes sure we all have the same numbers
+dat <- tibble(
+  x1 = rnorm(n = 1000, mean = 0, sd = 1),
+  x2 = rnorm(n = 1000, mean = 0, sd = 1), 
+  z = rnorm(n = 1000, mean = 0, sd = 1),
+  e =  rnorm(n = 1000, mean = 0, sd = 1/5)
+)
+a <- -0.4
+b1 <- 1.2
+b2 <- -0.8
+b3 <- 2.7
+
+dat <- dat %>% 
+  mutate(y = a + b1 * x1 + b2 * x2 + b3 * z + e)
+```
+
+## Solution
+
+```{r, results='asis'}
+fit <- lm(y ~ x1 + x2, data = dat)
+stargazer::stargazer(fit, type = "html", style = "apsr")
+```
+
+The real simulated value for the parameter `b1` was `r b1`.
+Our estimated value for `b1` is `r round(coef(fit)[2], digits = 2)`.
+
+The difference between the real and the estimated parameter is `r round(b1 - coef(fit)[2], digits = 2)`. The difference is very small, so **yes, we can still correctly estimate `b1`**.
+
+# The power of simulations
+
+## Do it all over again
+
+One of the key advantages of simulations is the ability to repeat a process many times.
+
+In this case, we may think that our estimates were just 'lucky', because the data is, after all, randomly drawn.
+
+Thus, it is a good idea to repeat the process many times.
+We can do so using a `for` loop.
+
+The following code:
+1. Builds the data (using the code above)
+2. Estimates the model (using the code above)
+3. Stores the estimate of `b1`
+4. Repeats everything `1,000` times.
+
+Finally, we plot all the 1,000 estimates to see if they are all close to zero. 
+
+```{r}
+
+# We can also generate a function to create the data:
+create_data <- function(obs = 1000, mean_vars = 0, sd_vars = 1){
+      dat <- tibble(
+      x1 = rnorm(n = obs, mean = mean_vars, sd = sd_vars),
+      x2 = rnorm(n = obs, mean = mean_vars, sd = sd_vars), 
+      z = rnorm(n = obs, mean = mean_vars, sd = sd_vars),
+      e =  rnorm(n = obs, mean = mean_vars, sd = sd_vars/5)
+    )
+    a <- -0.4
+    b1 <- 1.2
+    b2 <- -0.8
+    b3 <- 2.7
+    
+    dat <- dat %>% 
+      mutate(y = a + b1 * x1 + b2 * x2 + b3 * z + e)
+    
+    return(dat)
+}
+
+# Loop:
+out <- vector(mode = "numeric", length = 1000)   # 1. Create the output
+for (i in 1:1000) {                              # 2. Create the for loop
+  dat <- create_data()                           
+  fit <- lm(y ~ x1 + x2, data = dat)             # 3. Compute & store (note: out[i])
+  out[i] <- coef(fit)[2]
+}
+
+ggplot(data = tibble(b1 = out)) + 
+  geom_histogram(aes(x = b1), binwidth = 0.1) + 
+  geom_vline(aes(xintercept = 1.2), color = "red", lty = "dashed", size = 1) + 
+  geom_text(data = tibble(x = 0.9, y = 350, label = "True value:\nb1 = 1.2"), aes(x = x, y = y, label = label), size = 6) + 
+  labs(title = "Estimates of b1 from 1000 simulated models", x = "Estimates of b1")
+```
+
+## Simulating an actual confounder
+
+A **confounder** is an omitted variable that is correlated **both** with the predicted variable and with the predictor whose estimate will be biased.
+
+The following code introduces the following correlations:
+
+1. `X1 <-- Z` with parameter -1.0
+
+2. `Y <-- Z` with parameter 1.2
+
+3. `Y <-- X1` with parameter 0.5
+
+Now `Z` is a confounder: if we omit `Z` from the model, we will erroneously conclude that `X1` has an effect on `Y` of: `0.5 - 1.0 = -0.5`. This is wrong since the real effect is `+0.5`
+
+We use `n = 10,000` to be more precise with one single simulation. 
+
+```{r}
+set.seed(6052020)
+dat <- tibble(
+  z = rnorm(n = 10000, mean = 0, sd = 1),
+  e =  rnorm(n = 10000, mean = 0, sd = 1/5),
+  e_zx = rnorm(n = 10000, mean = 0, sd = 1/5) # error for the x1 equation
+)
+a <- 0        # intercept
+b1 <- 0.5     # Y <-- X1
+b2 <- 1.2     # Y <-- Z
+
+dat <- dat %>% 
+  mutate(
+    x1 = 0 - 1 * z + e_zx, 
+    # -1 is plugged-in directly
+    # also note the new error term
+       
+    y = a + b1 * x1 + b2 * z + e
+    # x1 'carries' the effect of z into y
+)
+```
+
+We can finally estimate our model and inspect the results:
+```{r, results='asis'}
+fit1 <- lm(y ~ x1, data = dat)
+fit2 <- lm(y ~ z, data = dat)
+fit3 <- lm(y ~ x1 + z, data = dat)
+stargazer::stargazer(fit1, fit2, fit3, type = "html", style = "apsr")
+```
+
+The only model that does a good job is model 3: 
+- model 1 erroneously finds that `x1` has a negative (and significant!) effect on `y`, when the effect is actually positive
+- model 2 finds that the marginal effect of `z` on ``y` is about `0.7` when the effect is actually about the double (`1.2`)
+
+**Confounders** are a dangerous threat for causal identification. 
