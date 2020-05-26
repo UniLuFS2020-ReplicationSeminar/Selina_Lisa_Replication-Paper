@@ -19,27 +19,34 @@ The paper "The ideological nationalization of partisan subconstituencies in the 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install.packages("tidyverse")
+install.packages("knitr")
+install.packages("markdown")
+install.packages("rmarkdown")
+install.packages("tool")
+library(tidyverse)
 library(data.table)
 library(ggplot2)
 install.packages("readr")
 install.packages("haven")
 library(readr)
-library(tidyverse)
 library(data.table)
 library(knitr)
 ```
+
 
 #load and rename the datasets, set new wd
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 here::here()
 
-opts_knit$set(root.dir = 'C:/Users/thail/Documents/Selina_Lisa_Replication-Paper')
+opts_knit$set(root.dir = "{C:/Users/thail/Documents/Selina_Lisa_Replication-Paper}")
 
 
 Economic <- get(load("senate-econ.RData"))
 Social <- get(load("senate-social.RData"))
 Racial <- get(load("senate-race.RData"))
+
 
 
 #merge datasets into one called ideals, add a column which identifies from which dataset the values came from
