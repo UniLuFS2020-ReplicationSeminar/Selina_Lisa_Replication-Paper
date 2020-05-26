@@ -1,8 +1,7 @@
 ---
-title: 'Replication Report "The Ideological Nationalization of Party Constituencies
-  in the American States"'
-author: "Selina Nguyen and Lisa Thai"
-date: "5/2/2020"
+title: "Replication Report"
+author: "Selina Nguyen, Lisa Thai"
+date: "26 5 2020"
 output: html_document
 ---
 
@@ -29,9 +28,3 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-```{r}
-setwd("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Output")
-```
-
