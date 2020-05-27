@@ -6,6 +6,8 @@ library(stringr)
 library(dgo)
 
 load("shaped.Rdata")
+getwd()
+setwd("C:\\Users\\thail\\Documents\\Selina_Lisa_Replication-Paper\\Data")
 
 PropCI <- function (s, n, level=.95) {
   if (length(s) == 1) {
@@ -106,6 +108,7 @@ mean_issue_divergence = function(props, absolute = FALSE) {
     group_by(biennium) %>%
     dplyr::summarize(diff_prop0_est = mean(diff_prop0_est))
   diffs
+
 }
 
 econ_diffs = mean_issue_divergence(econ_grp)
