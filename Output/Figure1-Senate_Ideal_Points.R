@@ -53,6 +53,7 @@ party_means <- ideals %>%
 p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   geom_line(mapping = aes(x = congress, y = mean_ideal, color = party_code)) +
   facet_wrap(~ domain)
+p1
 
 
 #filter out the Conservative and Independent party members
