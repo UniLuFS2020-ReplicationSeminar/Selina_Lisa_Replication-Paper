@@ -12,6 +12,11 @@ output:
 
 ## Introduction 
 The paper "The ideological nationalization of partisan subconstituencies in the American States" (2018) by Caughey et al. enables to question and to re-consider previous knwoledge about the ideological polarization among the Congress members and the among the population. Before, there was a consensus that the accelarating and increasing polarization between Democrats and Republicans prevails among Congress members. Mass polarization among citizens were not measureable and therefore considered to be low and rather stable. Caughey et al. made a great contribution by showing that polarization among citizens existists and is increasing too. This was possible by using estimated scores about the ideological position of the average Democrats and Republicans using survey-data that covers attitudes about economic, racial, and social policy aggregated for each state.
+- Transparency
+- description of the data
+- compare replicated figure with original one
+- conclusion
+
 
 ## Method and Data
 
