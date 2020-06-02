@@ -41,9 +41,10 @@ library(dplyr)
 knitr::opts_chunk$set(echo = TRUE)
 here::here()
 
-Economic <- load(here::here("Data","senate-econ.RData"))
-Social <- load(here::here("Data","senate-social.RData"))
-Racial <- load(here::here("Data","senate-race.RData"))
+Economic <- get(load(here::here("Data","senate-econ.RData")))
+Social <- get(load(here::here("Data","senate-social.RData")))
+Racial <- get(load(here::here("Data","senate-race.RData")))
+remove(table)
 ```
 
 
