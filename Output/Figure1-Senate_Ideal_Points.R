@@ -117,7 +117,7 @@ mean_diffs <- mean_diffs %>%
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash")) +
-  scale_y_continuous("Avg. Difference", limits = c(-.2, 2.6)) +
+  scale_y_continuous("Avg. Difference") +
   scale_x_continuous("Year", limits = c(1945, 2017), breaks = seq(1950, 2010, 10)) +
   ggtitle("Senate Ideal Points") +
   theme_bw() +
