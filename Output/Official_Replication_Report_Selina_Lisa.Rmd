@@ -19,16 +19,9 @@ The paper "The ideological nationalization of partisan subconstituencies in the 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-install.packages("tidyverse")
-install.packages("knitr")
-install.packages("markdown")
-install.packages("rmarkdown")
-install.packages("tool")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
-install.packages("readr")
-install.packages("haven")
 library(readr)
 library(data.table)
 library(knitr)
@@ -37,7 +30,7 @@ library(dplyr)
 
 
 #load and rename the datasets, set new wd
-```{r setup, include=FALSE}
+```{r load data}
 knitr::opts_chunk$set(echo = TRUE)
 here::here()
 
@@ -49,23 +42,23 @@ remove(table)
 
 
 #merge datasets into one called ideals, add a column which identifies from which dataset the values came from
-```{r setup, include=FALSE}
+```{r merge data}
 knitr::opts_chunk$set(echo = TRUE)
 ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial), .id = "domain")
 ```
 
 
 #filtering out the dataset to acquire only data from the 85th for the racial and social domain, and to the 113th Congress for all domains (p.137)
-```{r setup, include=FALSE}
+```{r filter data}
 knitr::opts_chunk$set(echo = TRUE)
               
-ideals <- filter(ideals, congress < 134,
+ideals <- filter(ideals, congress <= 133,
                  !(domain == "Racial" & congress < 85),
                  !(domain == "Social" & congress < 85))
-
+```
 
 # Normalize scores (using Z-score: Z = (x-mean)/sd)
-```{r setup, include=FALSE}
+```{r normalization and graphs}
 knitr::opts_chunk$set(echo = TRUE)
 ideals <- ideals %>% 
   group_by(domain) %>% 
@@ -91,6 +84,7 @@ p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   geom_line(mapping = aes(x = congress, y = mean_ideal, color = party_code)) +
   facet_wrap(~ domain)
 
+p1
 
 #filter out the Conservative and Independent party members
 ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
@@ -125,7 +119,7 @@ mean_state_diff <- function(ideal_points, time_var = "congress") {
   mean_diffs
 }
     
-
+here::here()
 mean_diff_by_domain = function(ideals) {
   .ideals = copy(ideals)
   econ_diff <- mean_state_diff(filter(.ideals, domain == "Economic"))
@@ -137,7 +131,7 @@ mean_diff_by_domain = function(ideals) {
                          "Social" = social_diff),
                     idcol = "Domain", fill = T)
   
-  congresses <- readRDS("congresses.Rds")
+  congresses <- readRDS(here::here("Data", "congresses.Rds"))
   merge(diffs, congresses, by.x = "congress", by.y = "cong", all.x = T, all.y = F)
 }
 
@@ -147,7 +141,6 @@ mean_diffs <- mean_diff_by_domain(ideals)
 # Flip for same polarity as previous estimates
 mean_diffs <- mean_diffs %>% 
   mutate(mean_diff_score = mean_diff_score * -1)
-
 
 
 p2 <- ggplot(data = mean_diffs) +
