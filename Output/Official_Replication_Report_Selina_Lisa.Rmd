@@ -12,17 +12,16 @@ output:
 
 ## Introduction 
 The paper "The ideological nationalization of partisan subconstituencies in the American States" (2018) by Caughey et al. enables to question and to re-consider previous knwoledge about the ideological polarization among the Congress members and the among the population. Before, there was a consensus that the accelarating and increasing polarization between Democrats and Republicans prevails among Congress members. Mass polarization among citizens were not measureable and therefore considered to be low and rather stable. Caughey et al. made a great contribution by showing that polarization among citizens existists and is increasing too. This was possible by using estimated scores about the ideological position of the average Democrats and Republicans using survey-data that covers attitudes about economic, racial, and social policy aggregated for each state.
-- Transparency
-- description of the data
-- compare replicated figure with original one
-- conclusion
 
+## Transparency
 
-## Method and Data
+## Description of the data
 
+## Replication Work
+In this following section we will describe our replication process, as well as explain the code we used to create the figure depicting the senate ideal points.
 
-
-```{r setup, include=FALSE}
+We started by downloading and selecting the necessary packages, such as tidyverse and ggplot2.
+```{r setup, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(data.table)
@@ -32,6 +31,16 @@ library(data.table)
 library(knitr)
 library(dplyr)
 ```
+
+
+
+## conclusion
+
+
+## Method and Data
+
+
+
 
 
 #load and rename the datasets, set new wd
