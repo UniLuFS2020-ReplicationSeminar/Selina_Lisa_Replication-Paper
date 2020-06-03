@@ -15,7 +15,7 @@ The paper "The ideological nationalization of partisan subconstituencies in the 
 
 
 ##Transparency & Replicability: 
-The fact, that the authors provided the scripts and datasets of the paper on Harvard Dataverse (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/RHFPVV) was very helpful and a good starting point for the replication work. However, it is important to note that if someone would try to replicate or reproduce the whole paper from scratch – which means by checking the operationalization of the survey questions or the classification of roll-call voting data into the three domains of economic, social, racial issues – that would not be possible based on the material that the authors have provided on Harvard Dataverse. The latter had been conducted by another research project called “Policy Agendas Project” by other authors (Adler and Wilkerson 2017), which Caughey et al. have adopted in their paper. Thus, Caughey et al. have been very transparent on which previous work they have built on and which surveys have been used. Therefore, it might also be possible to reproduce the whole paper from scratch, if someone wishes. In the paper, the authors justified and reflected their decisions transparently and even provide additional useful information in the footnotes – for example, which R packages they have used for certain calculations. However, in the officially published version that we downloaded from Springer (https://link.springer.com/article/10.1007/s11127-018-0543-3), there was no appendix provided in comparison to a pre-print version that we have accidentally found through google scholar. The supplementary appendix is 5 pages long and contains a detailed explanation of how the IRT model works. For sure, this has helped to get a better understanding of the model. Especially, if someone wishes to experiment more with this model or make some modifications, the appendix would be very useful. However, for us, the method and the model remained quite complex and not easy to fully understand. Therefore, it was very hard to think of ways on how we could have questioned or even improved the decisions that the authors have made. And since we are both beginners that just started got started to work with R, we also had to invest a lot of time in just making the codes run. 
+The fact, that the authors provided the scripts and datasets of the paper on [Harvard Dataverse] (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/RHFPVV) was very helpful and a good starting point for the replication work. However, it is important to note that if someone would try to replicate or reproduce the whole paper from scratch – which means by checking the operationalization of the survey questions or the classification of roll-call voting data into the three domains of economic, social, racial issues – that would not be possible based on the material that the authors have provided on Harvard Dataverse. The latter had been conducted by another research project called “Policy Agendas Project” by other authors (Adler and Wilkerson 2017), which Caughey et al. have adopted in their paper. Thus, Caughey et al. have been very transparent on which previous work they have built on and which surveys have been used. Therefore, it might also be possible to reproduce the whole paper from scratch, if someone wishes. In the paper, the authors justified and reflected their decisions transparently and even provide additional useful information in the footnotes – for example, which R packages they have used for certain calculations. However, in the officially published version that we downloaded from [Springer] (https://link.springer.com/article/10.1007/s11127-018-0543-3), there was no appendix provided in comparison to a pre-print version that we have accidentally found through google scholar. The supplementary appendix is 5 pages long and contains a detailed explanation of how the IRT model works. For sure, this has helped to get a better understanding of the model. Especially, if someone wishes to experiment more with this model or make some modifications, the appendix would be very useful. However, for us, the method and the model remained quite complex and not easy to fully understand. Therefore, it was very hard to think of ways on how we could have questioned or even improved the decisions that the authors have made. And since we are both beginners that just started got started to work with R, we also had to invest a lot of time in just making the codes run. 
 
 The codes for the first figure “Senate ideal Points” of figure 1 on page 138 were written in base R and we had troubles running them on our computers. Therefore, we decided to transform the codes that were not running into tidyverse codes. Even though some comments on the codes were provided, it was not always self-explanatory what the codes did or why they were used. But by jumping forth and back to the original paper, and some guessing, it became understandable and comprehensive what the authors have done. Thus, we would say that what the authors have described in the paper matches the content of the script. However, the dataset that we generated with the data and the script provided by the authors contains seven variables. The variable names that were chosen by the authors were confusing for us because they are very similar, for example: “dynamic_ideal” and “dynamic_ideal_norm”. Furthermore, for those metric values, it is hard or almost impossible to trace back on how exactly they were generated and calculated in the first place. It seems that the authors had done that in a different script that was not published on Harvard Dataverse. This was a bit surprising for us because we had assumed that this would be visible and possible to trace back in the provided script. Hence, we had no other choice than just to rely upon and work with the metric values provided by the authors. 
 
@@ -31,6 +31,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # Download packages
 library(tidyverse)
 library(dplyr)
+library(ggplot2)
+library(data.table)
 library(readr) #?
 library(knitr) #?
 ```
@@ -103,6 +105,8 @@ It is explained neither in the paper, nor in the original syntax, that the datas
 
 We plotted our graph accordingly and were able to see the polarization of the senator's ideal points based on the issue domains. However, it is not clear to us why Caughey et al. had to check for polarity if the final graph was supposed to show exactly the polarization in Congress anyway.
 ```{r check polarity and test graph}
+knitr::opts_chunk$set(echo = TRUE)
+
 # Create a variable that is the mean of the ideal points
 party_means <- ideals %>%
   group_by(domain, party_code, congress) %>% 
@@ -124,9 +128,11 @@ p1
 To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided to instead go step by step, following, but rewriting the original code.
 
 Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Finally, as the paper states, we took the within-state differences between parties in each congress and plotted the graph.
-```{r filtering and final graph}
+```{r filtering and final graph, fig.width=10, fig.height=5}
 # Drop any NA states and NA ideal points
-ideals <- filter(!is.na(get('state_abbrev')) & !is.na(get('dynamic_ideal')))
+knitr::opts_chunk$set(echo = TRUE)
+
+ideals <- filter(ideals, !is.na(get("state_abbrev")) & !is.na(get("dynamic_ideal")))
 
 # Filter out the Conservatives and Independents
 ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
@@ -159,7 +165,7 @@ mean_state_diff <- function(ideal_points, time_var = "congress") {
   mean_diffs
 }
     
-here::here()
+
 mean_diff_by_domain = function(ideals) {
   .ideals = copy(ideals)
   econ_diff <- mean_state_diff(filter(.ideals, domain == "Economic"))
@@ -182,7 +188,7 @@ mean_diffs <- mean_diff_by_domain(ideals)
 mean_diffs <- mean_diffs %>% 
   mutate(mean_diff_score = mean_diff_score * -1)
 
-
+# Plot the graph
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash")) +
@@ -194,6 +200,10 @@ p2 <- ggplot(data = mean_diffs) +
 
 p2
 ```
+'r fig_cap (1, caption = "Our replicated graph of the senate ideal points.)'
+
+![The original graph of the senate ideal points.] (/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Figs) The RStudio logo.
+
 
 If we compare the replicated with the original graph, there are some noticeable differences.
 
