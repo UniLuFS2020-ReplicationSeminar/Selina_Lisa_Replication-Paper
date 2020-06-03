@@ -23,7 +23,7 @@ The actual tables and figures that were assigned to be replicated, accompanied b
 In this following section we will describe our replication process, as well as explain the code we used to create the figure depicting the senate ideal points.
 
 ### Intial Setup
-We started by downloading and selecting the tidyverse package, as we required both dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
+We started by downloading and selecting the necessary packages, such as dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
 ```{r setup, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -48,18 +48,22 @@ Then, we proceeded to merge the datasets into a single one, which we named _idea
 knitr::opts_chunk$set(echo = TRUE)
 ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial), .id = "domain")
 ```
-    
 
-#filtering out the dataset to acquire only data from the 85th for the racial and social domain, and to the 113th Congress for all domains (p.137)
+
+### Optimizing the dataset
+After the initial setup, we continued by optimizing our dataset _ideals_ to create the graph, starting with filtering out roll call data in the racial and social domains that preceeded the 85th Congress. For all issue domains, including the economic one, we filtered out values that went beyond the 113th Congress.
+The reason behind this specific filtering lies in the paper: "For the economic domain, we estimate senators’ ideal points in each congressional term between the 81th (1949–1950) and 113th (2013–2013). Because few roll call on social and race issues were voted on until the late 1950s, our estimates for these domains start in the 85th Congress (1957–1958)" (Caughey et al. 2018, 137).
+Without thoroughly reading and comprehending the paper, we would not have figured out this essential step in the original syntax as it was not commented on.
 ```{r filter data}
 knitr::opts_chunk$set(echo = TRUE)
               
-ideals <- filter(ideals, congress <= 133,
+ideals <- filter(ideals, congress <= 113,
                  !(domain == "Racial" & congress < 85),
                  !(domain == "Social" & congress < 85))
 ```
 
-# Normalize scores (using Z-score: Z = (x-mean)/sd)
+Next, we standardized the scores of the ideal points and named the new variable _dynamic_ideal_norm_. Here, not only did the authors describe the code, the normalization also matched what was described in the paper. The estimates of the ideal points were to be coded as to produce a mean of 0 and variance of 1 across senator-congresses (Caughey et al. 2018, 137).
+To make sure we were on the right track, we tested our z-standardization by taking the mean and the standard deviation of the ideal points.
 ```{r normalization and graphs}
 knitr::opts_chunk$set(echo = TRUE)
 ideals <- ideals %>% 
@@ -69,7 +73,9 @@ ideals <- ideals %>%
 # check if it worked
 mean(ideals$dynamic_ideal_norm) # ~0
 sd(ideals$dynamic_ideal_norm) # 1
+```
 
+```{r filtering and test graph}
 # Drop presidents
 ideals <- filter(ideals, !(state_abbrev == "USA"))
 
@@ -87,7 +93,11 @@ p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   facet_wrap(~ domain)
 
 p1
+```
 
+
+The ideal point estimates are coded so that larger scores are conservative and are standardized to have zero mean and unit variance across senator-con- gresses. Finally, for each term, we calculated the ideal-point differences between senators from the same state but different parties, and then we averaged the domain-specifc differences within each term.
+```{r filtering and final graph}
 #filter out the Conservative and Independent party members
 ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
 
