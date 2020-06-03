@@ -17,34 +17,23 @@ The paper "The ideological nationalization of partisan subconstituencies in the 
 
 ## Description of the data
 
+The actual tables and figures that were assigned to be replicated, accompanied by a short comparison with the corresponding tables and figures published in the paper. Relevant questions to be tackled in the report include: are the main findings successfully replicated? Were there hidden assumptions in the paper that influenced the results in a way that could not be perceived by the normal reader? Were there coding errors or any other factual mistake? A conclusion with an overall assessment of the replication exercise is also expected.
+
 ## Replication Work
 In this following section we will describe our replication process, as well as explain the code we used to create the figure depicting the senate ideal points.
 
-We started by downloading and selecting the necessary packages, such as tidyverse and ggplot2.
+### Intial Setup
+We started by downloading and selecting the tidyverse package, as we required both dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
 ```{r setup, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(data.table)
-library(ggplot2)
-library(readr)
-library(data.table)
-library(knitr)
 library(dplyr)
+library(readr) #?
+library(knitr) #?
 ```
 
-
-
-## conclusion
-
-
-## Method and Data
-
-
-
-
-
-#load and rename the datasets, set new wd
-```{r load data}
+After setting the working directory, following the original syntax, we loaded three datasets into R, while also renaming them according to the issue domains _Economic_, _Social_ and _Racial_. This resulted also into an unnecessary dataframe called _table_, which we removed for clarity's sake.
+```{r load data, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 here::here()
 
@@ -54,13 +43,12 @@ Racial <- get(load(here::here("Data","senate-race.RData")))
 remove(table)
 ```
 
-
-#merge datasets into one called ideals, add a column which identifies from which dataset the values came from
-```{r merge data}
+Then, we proceeded to merge the datasets into a single one, which we named _ideals_. As we still wanted to be able to identify from which issue domain the values came from, we added a column called _domain_.
+```{r merge data, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial), .id = "domain")
 ```
-
+    
 
 #filtering out the dataset to acquire only data from the 85th for the racial and social domain, and to the 113th Congress for all domains (p.137)
 ```{r filter data}
