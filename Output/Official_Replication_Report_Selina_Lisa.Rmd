@@ -26,8 +26,6 @@ In this following section we will describe our replication process, as well as e
 ### Intial Setup
 We started by downloading and selecting the necessary packages, such as dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
 ```{r setup, eval=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
 # Download packages
 library(tidyverse)
 library(dplyr)
@@ -39,8 +37,6 @@ library(knitr) #?
 
 After setting the working directory, following the original syntax, we loaded three datasets into R, while also renaming them according to the issue domains _Economic_, _Social_ and _Racial_. This resulted also into an unnecessary dataframe called _table_, which we removed for clarity's sake.
 ```{r load data, eval=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
 # Set working directory
 here::here()
 
@@ -53,7 +49,7 @@ remove(table)
 
 Then, we proceeded to merge the datasets into a single one, which we named _ideals_. As we still wanted to be able to identify from which issue domain the values came from, we added a column called _domain_.
 ```{r merge data, eval=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 
 # Merge datasets into one, but specify which domain the values belong to
 ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial), .id = "domain")
@@ -64,9 +60,7 @@ ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial),
 After the initial setup, we continued by optimizing our dataset _ideals_ to create the graph, starting with filtering out roll call data in the racial and social domains that preceeded the 85th Congress. For all issue domains, including the economic one, we filtered out values that went beyond the 113th Congress.
 The reason behind this specific filtering lies in the paper: "For the economic domain, we estimate senators’ ideal points in each congressional term between the 81th (1949–1950) and 113th (2013–2013). Because few roll call on social and race issues were voted on until the late 1950s, our estimates for these domains start in the 85th Congress (1957–1958)" (Caughey et al. 2018, 137).
 Without thoroughly reading and comprehending the paper, we would not have figured out this essential step in the original syntax as it was not commented on.
-```{r filter data}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r filter data, eval=FALSE}
 # Filter out data after 113th Congress in all domains
 # Filter out data before 85th Congress in racial and social domains 
 ideals <- filter(ideals, congress <= 113,
@@ -76,9 +70,7 @@ ideals <- filter(ideals, congress <= 113,
 
 Next, we standardized the scores of the ideal points and named the new variable _dynamic_ideal_norm_. Here, not only did the authors describe the code, the normalization also matched what was described in the paper. The estimates of the ideal points were to be coded as to produce a mean of 0 and variance of 1 across senator-congresses (Caughey et al. 2018, 137).
 To make sure we were on the right track, we tested our z-standardization by taking the mean and the standard deviation of the ideal points.
-```{r normalization and graphs}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r normalization, eval=FALSE}
 # Normalize the scores
 ideals <- ideals %>% 
   group_by(domain) %>% 
@@ -90,7 +82,7 @@ sd(ideals$dynamic_ideal_norm) # 1
 ```
 
 Indicated by a comment in the original syntax, though, not in the paper, there are also presidential senators, who are identified with the state abbreviation _USA_, included in the roll call data. Thus, we also filtered them out. 
-```{r filtering out presidents}
+```{r filtering out presidents, eval=FALSE}
 # Drop presidents
 ideals <- filter(ideals, !(state_abbrev == "USA"))
 ```
@@ -104,9 +96,7 @@ From the original code, we had to deduce several steps First, they took the mean
 It is explained neither in the paper, nor in the original syntax, that the dataset includes not only Republicans and Democrats, but also Conservatives and Independents. As the paper only focuses on polarization between Republican and Democratic senators, the other party members will need to be filtered out. After consulting the voteview website and looking at our data, we were able to figure out that the party codes for Republicans and Democrats were 100 and 200, respectively, while Conservatives were identified by 212 and Independents by 328.
 
 We plotted our graph accordingly and were able to see the polarization of the senator's ideal points based on the issue domains. However, it is not clear to us why Caughey et al. had to check for polarity if the final graph was supposed to show exactly the polarization in Congress anyway.
-```{r check polarity and test graph}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r check polarity and test graph, eval=FALSE}
 # Create a variable that is the mean of the ideal points
 party_means <- ideals %>%
   group_by(domain, party_code, congress) %>% 
@@ -128,11 +118,8 @@ p1
 To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided to instead go step by step, following, but rewriting the original code.
 
 Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Without the comments in the syntax, we would not have understood or undertaken the subsetting in the first place, even though they could potentially distort the findings.
-Finally, matching the procedure explained in the paper, we took the within-state differences between parties in each congress and plotted the graph.
-```{r filtering and final graph}
+```{r filtering, eval=FALSE}
 # Drop any NA states and NA ideal points
-knitr::opts_chunk$set(echo = TRUE)
-
 ideals <- filter(ideals, !is.na(get("state_abbrev")) & !is.na(get("dynamic_ideal")))
 
 # Filter out the Conservatives and Independents
@@ -188,7 +175,10 @@ mean_diffs <- mean_diff_by_domain(ideals)
 # Flip for same polarity as previous estimates
 mean_diffs <- mean_diffs %>% 
   mutate(mean_diff_score = mean_diff_score * -1)
+```
 
+Finally, matching the procedure explained in the paper, we took the within-state differences between parties in each congress and plotted the graph.
+```{r final graph}
 # Plot the graph
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
@@ -221,6 +211,6 @@ library(devtools)
 devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
 
 #in the console, select the section to be counted
-wordcountaddin::word_count("Official_Replication_Report_Selina_Lisa.Rmd")
+wordcountaddin::word_count("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Output/Official_Replication_Report_Selina_Lisa.Rmd")
 ```
 
