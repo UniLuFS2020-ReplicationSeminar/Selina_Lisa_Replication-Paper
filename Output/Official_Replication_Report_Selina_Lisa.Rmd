@@ -127,8 +127,9 @@ p1
 
 To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided to instead go step by step, following, but rewriting the original code.
 
-Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Finally, as the paper states, we took the within-state differences between parties in each congress and plotted the graph.
-```{r filtering and final graph, fig.width=10, fig.height=5}
+Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Without the comments in the syntax, we would not have understood or undertaken the subsetting in the first place, even though they could potentially distort the findings.
+Finally, matching the procedure explained in the paper, we took the within-state differences between parties in each congress and plotted the graph.
+```{r filtering and final graph}
 # Drop any NA states and NA ideal points
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -202,14 +203,16 @@ p2
 ```
 'r fig_cap (1, caption = "Our replicated graph of the senate ideal points.)'
 
-![The original graph of the senate ideal points.] (/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Figs) The RStudio logo.
+![] (/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Figs/Figure1_Senate_Ideal_Points.png) The original graph of the senate ideal points.
+
+If we compare the replicated with the original graph, there are some noticeable differences. Most prominently, our graph shows average differences of above even 3, while in the original graph differences in senate ideal points barely go over 2, peaking after the year 2000. Perhaps our standardization of the scores did not result in the same normalized ideal points as it did in the original graph. The divergences from the original graph, such as some strong dips in the Economic domain line before 1980 and in all issue domain lines after 1990. most probably also stem from us having to rewrite almost all of the code, since the base R syntax, more often than not, was not recognized by our softwares.
+
+However, despite our higher average differences, the overall trend indicated by our graph follows that of the original one. We can observe an upward polarization due to the increase of the average differences in senate ideal point estimates in all three issue domains. Especially, it seems senators within the same state disagree on economic topics the most, which Caughey et al. note in their paper as well. According to the authors, their main findings about the senate ideal points are consistent with prior studies and, therefore, ours seem to fit as well (Caughey et al. 2018, 137).
 
 
-If we compare the replicated with the original graph, there are some noticeable differences.
+##Conclusion
+While the transparency of the study, provided through methodological explanations in the paper and comments in the syntax, as well as replication data, code and figures made available online, seems relatively high, we definitely had to do our own research, namely on the roll call data from voteview. Thorough reading of the paper itself was essential to comprehend the coding, as was analyzing the dataset to understand the filtering steps. Though the comments were helpful, it would not have hurt for the authors to have given more information on the coding procedure. We could not determine whether the differences between our graph from the original one are due to coding mistakes we made while rewriting most of it, or due to errors in the syntax provided by the authors. However, the replication of the overall findings Caughey et al. made was only possible, because we were able to follow the theory and methodology in the paper and comprehend its translation into R code in the syntax. Through this exercise, we realized how important it is to thoroughly and tidily document one's process to ensure the possibility of reproduction and replication.
 
-
-
-The actual tables and figures that were assigned to be replicated, accompanied by a short comparison with the corresponding tables and figures published in the paper. Relevant questions to be tackled in the report include: are the main findings successfully replicated? Were there hidden assumptions in the paper that influenced the results in a way that could not be perceived by the normal reader? Were there coding errors or any other factual mistake? A conclusion with an overall assessment of the replication exercise is also expected.
 
 ```{r Word Count Add-In, include=FALSE}
 install.packages("devtools")
