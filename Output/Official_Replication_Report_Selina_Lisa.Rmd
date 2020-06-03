@@ -1,31 +1,39 @@
 ---
-title: "Replication Report - The ideological nationalization of partisan subconstituencies in the American States (2018) by Devin Caughey · James Dunham · Christopher Warshaw"
-author: "Selina Nguyen, Lisa Thai"
-date: "5/26/2020"
+title: "Replication Report"
+subtitle: "The ideological nationalization of partisan subconstituencies in the American States (2018) by Devin Caughey · James Dunham · Christopher Warshaw"
+
+author:
+  - name: "Selina Nguyen"
+    affiliation: "University of Lucerne"
+    email: "selina.nguyen@stud.unilu.ch"
+  - name: "Lisa Thai"
+    affiliation: "University of Lucerne"
+    email: "lisa.thai@stud.unilu.ch"
+
+date: "6/3/2020"
 output: 
   html_document: 
     toc: yes
     number_sections: yes
 ---
+word count: 1975
 
-# The ideological nationalization of partisan subconstituencies in the American States (2018)
-
-## Introduction 
+# Introduction 
 The paper "The ideological nationalization of partisan subconstituencies in the American States" (2018) by Caughey et al. enables to question and to re-consider previous knwoledge about the ideological polarization among the Congress members and the among the population. Before, there was a consensus that the accelarating and increasing polarization between Democrats and Republicans prevails among Congress members. Mass polarization among citizens were not measureable and therefore considered to be low and rather stable. Caughey et al. made a great contribution by showing that polarization among citizens existists and is increasing too. This was possible by using estimated scores about the ideological position of the average Democrats and Republicans using survey-data that covers attitudes about economic, racial, and social policy aggregated for each state.
 
 
-## Transparency & Replicability: 
+# Transparency & Replicability: 
 The fact, that the authors provided the scripts and datasets of the paper on [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/RHFPVV) was very helpful and a good starting point for the replication work. However, it is important to note that if someone would try to replicate or reproduce the whole paper from scratch – which means by checking the operationalization of the survey questions or the classification of roll-call voting data into the three domains of economic, social, racial issues – that would not be possible based on the material that the authors have provided on Harvard Dataverse. The latter had been conducted by another research project called “Policy Agendas Project” by other authors (Adler and Wilkerson 2017), which Caughey et al. have adopted in their paper. Thus, Caughey et al. have been very transparent on which previous work they have built on and which surveys have been used. Therefore, it might also be possible to reproduce the whole paper from scratch, if someone wishes. In the paper, the authors justified and reflected their decisions transparently and even provide additional useful information in the footnotes – for example, which R packages they have used for certain calculations. However, in the officially published version that we downloaded from [Springer](https://link.springer.com/article/10.1007/s11127-018-0543-3), there was no appendix provided in comparison to a pre-print version that we have accidentally found through google scholar. The supplementary appendix is 5 pages long and contains a detailed explanation of how the IRT model works. For sure, this has helped to get a better understanding of the model. Especially, if someone wishes to experiment more with this model or make some modifications, the appendix would be very useful. However, for us, the method and the model remained quite complex and not easy to fully understand. Therefore, it was very hard to think of ways on how we could have questioned or even improved the decisions that the authors have made. And since we are both beginners that just started got started to work with R, we also had to invest a lot of time in just making the codes run. 
 
 The codes for the first figure “Senate ideal Points” of figure 1 on page 138 were written in base R and we had troubles running them on our computers. Therefore, we decided to transform the codes that were not running into tidyverse codes. Even though some comments on the codes were provided, it was not always self-explanatory what the codes did or why they were used. But by jumping forth and back to the original paper, and some guessing, it became understandable and comprehensive what the authors have done. Thus, we would say that what the authors have described in the paper matches the content of the script. However, the dataset that we generated with the data and the script provided by the authors contains seven variables. The variable names that were chosen by the authors were confusing for us because they are very similar, for example: “dynamic_ideal” and “dynamic_ideal_norm”. Furthermore, for those metric values, it is hard or almost impossible to trace back on how exactly they were generated and calculated in the first place. It seems that the authors had done that in a different script that was not published on Harvard Dataverse. This was a bit surprising for us because we had assumed that this would be visible and possible to trace back in the provided script. Hence, we had no other choice than just to rely upon and work with the metric values provided by the authors. 
 
 
-## Replication Work
+# Replication Work
 In this following section we will describe our replication process, as well as explain the code we used to create the figure depicting the senate ideal points.
 
-### Intial Setup
+## Intial Setup
 We started by downloading and selecting the necessary packages, such as dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
-```{r setup, results='hide'}
+```{r setup, results='hide', message=FALSE, warning=FALSE}
 # Download packages
 library(tidyverse)
 library(dplyr)
@@ -52,7 +60,7 @@ ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial),
 ```
 
 
-### Optimizing the dataset
+## Optimizing the Dataset
 After the initial setup, we continued by optimizing our dataset _ideals_ to create the graph, starting with filtering out roll call data in the racial and social domains that preceeded the 85th Congress. For all issue domains, including the economic one, we filtered out values that went beyond the 113th Congress.
 The reason behind this specific filtering lies in the paper: "For the economic domain, we estimate senators’ ideal points in each congressional term between the 81th (1949–1950) and 113th (2013–2013). Because few roll call on social and race issues were voted on until the late 1950s, our estimates for these domains start in the 85th Congress (1957–1958)" (Caughey et al. 2018, 137).
 Without thoroughly reading and comprehending the paper, we would not have figured out this essential step in the original syntax as it was not commented on.
@@ -84,7 +92,7 @@ ideals <- filter(ideals, !(state_abbrev == "USA"))
 ```
 
 
-### Creating the graphs
+## Creating the Graphs
 After having reworked the dataframe, the Caughey et al. produce a first graph. However, as they comment in the syntax, this is not the final output, but to check the polarity.
 
 From the original code, we had to deduce several steps First, they took the mean from the standardized ideal points and called the new variable _mean_ideal_. Then, they encoded the vector variable _party_code_ as a factor, presumably since the party code is a categorical variable and, therefore, has no numerical value.
@@ -172,7 +180,7 @@ mean_diffs <- mean_diffs %>%
 ```
 
 Finally, matching the procedure explained in the paper, we took the within-state differences between parties in each congress and plotted the graph.
-```{r final graph, fig.height=, fig.width= fig.cap="\\label{fig:figs}Figure 1: Our replicated graph of the senate ideal points."}
+```{r final graph, fig.height=4, fig.width=8, fig.cap="\\label{fig:figs}Figure 1: Our replicated graph of the senate ideal points."}
 # Plot the graph
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
@@ -193,14 +201,24 @@ If we compare the replicated with the original graph, there are some noticeable 
 However, despite our higher average differences, the overall trend indicated by our graph follows that of the original one. We can observe an upward polarization due to the increase of the average differences in senate ideal point estimates in all three issue domains. Especially, it seems senators within the same state disagree on economic topics the most, which Caughey et al. note in their paper as well. According to the authors, their main findings about the senate ideal points are consistent with prior studies and, therefore, ours seem to fit as well (Caughey et al. 2018, 137).
 
 
-## Conclusion
+# Conclusion
 While the transparency of the study, provided through methodological explanations in the paper and comments in the syntax, as well as replication data, code and figures made available online, seems relatively high, we definitely had to do our own research, namely on the roll call data from voteview. Thorough reading of the paper itself was essential to comprehend the coding, as was analyzing the dataset to understand the filtering steps. Though the comments were helpful, it would not have hurt for the authors to have given more information on the coding procedure. We could not determine whether the differences between our graph from the original one are due to coding mistakes we made while rewriting most of it, or due to errors in the syntax provided by the authors. However, the replication of the overall findings Caughey et al. made was only possible, because we were able to follow the theory and methodology in the paper and comprehend its translation into R code in the syntax. Through this exercise, we realized how important it is to thoroughly and tidily document one's process to ensure the possibility of reproduction and replication.
 
+# Bibliography
+* Caughey, Devin; James Dunham, Christopher Warshaw (2018): The ideological nationalization of partisan subconstituencies in the American States. Public Choice (176):133-151.Adler, E. S., & Wilkerson, J. (2017).
+* Congressional bills project. National Science Foundation grants 880066 and 880061. <http://www.congressionalbills.org/download.html>.
 
-```{r Word Count Add-In, include=FALSE}
+
+```{r Word Count and Papaja Add-In, include=FALSE}
 library(devtools)
+library(papaja)
+library(rmdfiltr)
+library(markdown)
+library(readr)
 
 devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+devtools::install_github("crsh/papaja")
+remotes::install_github("crsh/rmdfiltr")
 
 #in the console, select the section to be counted
 wordcountaddin::word_count("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Output/Official_Replication_Report_Selina_Lisa.Rmd")
