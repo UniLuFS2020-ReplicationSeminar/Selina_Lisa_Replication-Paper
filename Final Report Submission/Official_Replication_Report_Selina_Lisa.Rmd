@@ -9,14 +9,19 @@ author:
   name: Lisa Thai
 date: "6/3/2020"
 output:
-  word_document:
-    toc: yes
   html_document:
     number_sections: yes
+    toc: yes
+  word_document:
     toc: yes
 subtitle: The ideological nationalization of partisan subconstituencies in the American
   States (2018) by Devin Caughey · James Dunham · Christopher Warshaw
 ---
+<style>
+body {
+text-align: justify}
+</style>
+
 word count: 1975
 
 # Introduction 
@@ -94,11 +99,11 @@ ideals <- filter(ideals, !(state_abbrev == "USA"))
 
 
 ## Creating the Graphs
-After having reworked the dataframe, the Caughey et al. produce a first graph. However, as they comment in the syntax, this is not the final output, but to check the polarity.
+After having reworked the dataframe, Caughey et al. produce a first graph. However, as they comment in the syntax, this is not the final output, but to check the polarity.
 
 From the original code, we had to deduce several steps First, they took the mean from the standardized ideal points and called the new variable _mean_ideal_. Then, they encoded the vector variable _party_code_ as a factor, presumably since the party code is a categorical variable and, therefore, has no numerical value.
 
-It is explained neither in the paper, nor in the original syntax, that the dataset includes not only Republicans and Democrats, but also Conservatives and Independents. As the paper only focuses on polarization between Republican and Democratic senators, the other party members will need to be filtered out. After consulting the voteview website and looking at our data, we were able to figure out that the party codes for Republicans and Democrats were 100 and 200, respectively, while Conservatives were identified by 212 and Independents by 328.
+It is explained neither in the paper, nor in the original syntax, that the dataset includes not only Republicans and Democrats, but also Conservatives and Independents. As the paper only focuses on polarization between Republican and Democratic senators, the other party members need to be filtered out. After consulting the voteview website and looking at our data, we were able to figure out that the party codes for Republicans and Democrats were 100 and 200, respectively, while Conservatives were identified by 212 and Independents by 328.
 
 We plotted our graph accordingly and were able to see the polarization of the senator's ideal points based on the issue domains. However, it is not clear to us why Caughey et al. had to check for polarity if the final graph was supposed to show exactly the polarization in Congress anyway.
 ```{r check polarity and test graph, results='hide'}
@@ -118,7 +123,7 @@ p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   facet_wrap(~ domain)
 ```
 
-To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided to instead go step by step, following, but rewriting the original code.
+To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided instead to go step by step, following, but rewriting the original code.
 
 Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Without the comments in the syntax, we would not have understood or undertaken the subsetting in the first place, even though they could potentially distort the findings.
 ```{r filtering, results='hide'}
@@ -181,7 +186,7 @@ mean_diffs <- mean_diffs %>%
 ```
 
 Finally, matching the procedure explained in the paper, we took the within-state differences between parties in each congress and plotted the graph.
-```{r final graph, fig.height=4, fig.width=8, fig.cap="\\label{fig:figs}Figure 1: Our replicated graph of the senate ideal points."}
+```{r final graph, fig.align="center", fig.height=4, fig.width=8.5, fig.cap="\\label{fig:figs}Figure 1: Our replicated graph of the senate ideal points"}
 # Plot the graph
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
@@ -194,8 +199,12 @@ p2 <- ggplot(data = mean_diffs) +
 
 p2
 ```
+<br>
 
-![Senate Ideal points](/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Figs/Figure1_Senate_Ideal_Points.png) Figure 2: The original graph of the senate ideal points.
+<center>
+![Figure 2: The original graph of the senate ideal points.](/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Figs/Figure1_Senate_Ideal_Points.png)Figure 2: The original graph of the senate ideal points
+</center>
+<br>
 
 If we compare the replicated with the original graph, there are some noticeable differences. Most prominently, our graph shows average differences of above even 3, while in the original graph differences in senate ideal points barely go over 2, peaking after the year 2000. Perhaps our standardization of the scores did not result in the same normalized ideal points as it did in the original graph. The divergences from the original graph, such as some strong dips in the Economic domain line before 1980 and in all issue domain lines after 1990. most probably also stem from us having to rewrite almost all of the code, since the base R syntax, more often than not, was not recognized by our softwares.
 
