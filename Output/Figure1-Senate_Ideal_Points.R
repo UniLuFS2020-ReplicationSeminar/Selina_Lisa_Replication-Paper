@@ -124,5 +124,19 @@ p2 <- ggplot(data = mean_diffs) +
   theme(plot.title = element_text(hjust = 0.5))
 
 p2
-  
-```
+ 
+
+
+ 
+library(devtools)
+library(papaja)
+library(rmdfiltr)
+library(markdown)
+library(readr)
+
+devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+devtools::install_github("crsh/papaja")
+remotes::install_github("crsh/rmdfiltr")
+
+#in the console, select the section to be counted
+wordcountaddin::word_count("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Output/Official_Replication_Report_Selina_Lisa.Rmd")

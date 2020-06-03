@@ -209,18 +209,3 @@ While the transparency of the study, provided through methodological explanation
 * Congressional bills project. National Science Foundation grants 880066 and 880061. <http://www.congressionalbills.org/download.html>.
 
 
-```{r Word Count and Papaja Add-In, include=FALSE}
-library(devtools)
-library(papaja)
-library(rmdfiltr)
-library(markdown)
-library(readr)
-
-devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
-devtools::install_github("crsh/papaja")
-remotes::install_github("crsh/rmdfiltr")
-
-#in the console, select the section to be counted
-wordcountaddin::word_count("/Users/nhatnguyen/Desktop/Uni/FS20/MA Replication/LisaSelina_Replication/Selina_Lisa_Replication-Paper/Output/Official_Replication_Report_Selina_Lisa.Rmd")
-```
-
