@@ -1,20 +1,21 @@
 ---
 title: "Replication Report"
-subtitle: "The ideological nationalization of partisan subconstituencies in the American States (2018) by Devin Caughey · James Dunham · Christopher Warshaw"
-
 author:
-  - name: "Selina Nguyen"
-    affiliation: "University of Lucerne"
-    email: "selina.nguyen@stud.unilu.ch"
-  - name: "Lisa Thai"
-    affiliation: "University of Lucerne"
-    email: "lisa.thai@stud.unilu.ch"
-
+- affiliation: University of Lucerne
+  email: selina.nguyen@stud.unilu.ch
+  name: Selina Nguyen
+- affiliation: University of Lucerne
+  email: lisa.thai@stud.unilu.ch
+  name: Lisa Thai
 date: "6/3/2020"
-output: 
-  html_document: 
+output:
+  word_document:
     toc: yes
+  html_document:
     number_sections: yes
+    toc: yes
+subtitle: The ideological nationalization of partisan subconstituencies in the American
+  States (2018) by Devin Caughey · James Dunham · Christopher Warshaw
 ---
 word count: 1975
 
