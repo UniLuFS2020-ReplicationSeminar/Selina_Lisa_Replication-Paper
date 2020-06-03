@@ -120,10 +120,14 @@ p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
 p1
 ```
 
+To create the actual final output, i.e. the graph depicting the senators' ideal points, Caughey et al. created two functions to further subset their data, as well as "calculate[d] the ideal-point differences between senators from the same state but different parties, and then [we] average[d] the domain-specifc differences within each term" (Caughey et al. 2018, 137). Because the first function serves to basically filter the data, we decided to instead go step by step, following, but rewriting the original code.
 
-The ideal point estimates are coded so that larger scores are conservative and are standardized to have zero mean and unit variance across senator-con- gresses. Finally, for each term, we calculated the ideal-point differences between senators from the same state but different parties, and then we averaged the domain-specifc differences within each term.
+Accordingly, we started by filtering out the missing values, along with the Independents and Conservatives. Then, we eliminated the states that are represented by only one party, since the graph has to show the within-state differences, not across the states. Next, we took the within-state-party average, in case there is more than one senator who represents a state in a Congress. Finally, as the paper states, we took the within-state differences between parties in each congress and plotted the graph.
 ```{r filtering and final graph}
-# Filter out the Conservative and Independent party members
+# Drop any NA states and NA ideal points
+ideals <- filter(!is.na(get('state_abbrev')) & !is.na(get('dynamic_ideal')))
+
+# Filter out the Conservatives and Independents
 ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
 
 # Filter out the states that are represented by senators of only one party
@@ -135,12 +139,10 @@ ideals <- ideals %>%
 ideals <- ideals %>% 
   filter(!(two_party == F))
 
-# Take the within-state-party average, for the case in which there's more than
-# one senator/member in a state-congress pair.    
+# Take the within-state-party average, for the case in which there's more than one senator/member in a state-congress pair.    
 ideals <- ideals %>% 
   group_by(congress, state_abbrev, party_code) %>% 
   mutate(dynamic_ideal_norm = mean(dynamic_ideal_norm))
-
 
 # Take the within-state differences between parties in each congress
 mean_state_diff <- function(ideal_points, time_var = "congress") {
@@ -183,7 +185,7 @@ mean_diffs <- mean_diffs %>%
 p2 <- ggplot(data = mean_diffs) +
   geom_line(mapping = aes(end_year, mean_diff_score, color = Domain, linetype = Domain)) +
   scale_linetype_manual(values=c("solid", "dashed", "dotdash")) +
-  scale_y_continuous("Avg. Difference", limits = c(-.2, 2.6)) +
+  scale_y_continuous("Avg. Difference") +
   scale_x_continuous("Year", limits = c(1945, 2017), breaks = seq(1950, 2010, 10)) +
   ggtitle("Senate Ideal Points") +
   theme_bw() +
@@ -192,9 +194,16 @@ p2 <- ggplot(data = mean_diffs) +
 p2
 ```
 
-```{r Word Count Add-In}
+If we compare the replicated with the original graph, there are some noticeable differences.
+
+
+```{r Word Count Add-In, include=FALSE}
 install.packages("devtools")
+library(devtools)
 
 devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+
+#in the console, select the section to be counted
+wordcountaddin::word_count("Official_Replication_Report_Selina_Lisa.Rmd")
 ```
 
