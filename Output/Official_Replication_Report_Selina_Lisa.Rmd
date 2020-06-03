@@ -26,6 +26,8 @@ In this following section we will describe our replication process, as well as e
 We started by downloading and selecting the necessary packages, such as dplyr and ggplot2. Differently from the original syntax, we left out the data.table, haven and readr package.
 ```{r setup, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Download packages
 library(tidyverse)
 library(dplyr)
 library(readr) #?
@@ -35,8 +37,11 @@ library(knitr) #?
 After setting the working directory, following the original syntax, we loaded three datasets into R, while also renaming them according to the issue domains _Economic_, _Social_ and _Racial_. This resulted also into an unnecessary dataframe called _table_, which we removed for clarity's sake.
 ```{r load data, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Set working directory
 here::here()
 
+# Load and rename datasets according to issue domains
 Economic <- get(load(here::here("Data","senate-econ.RData")))
 Social <- get(load(here::here("Data","senate-social.RData")))
 Racial <- get(load(here::here("Data","senate-race.RData")))
@@ -46,6 +51,8 @@ remove(table)
 Then, we proceeded to merge the datasets into a single one, which we named _ideals_. As we still wanted to be able to identify from which issue domain the values came from, we added a column called _domain_.
 ```{r merge data, eval=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Merge datasets into one, but specify which domain the values belong to
 ideals <- bind_rows(list(Economic = Economic, Social = Social, Racial = Racial), .id = "domain")
 ```
 
@@ -56,7 +63,9 @@ The reason behind this specific filtering lies in the paper: "For the economic d
 Without thoroughly reading and comprehending the paper, we would not have figured out this essential step in the original syntax as it was not commented on.
 ```{r filter data}
 knitr::opts_chunk$set(echo = TRUE)
-              
+
+# Filter out data after 113th Congress in all domains
+# Filter out data before 85th Congress in racial and social domains 
 ideals <- filter(ideals, congress <= 113,
                  !(domain == "Racial" & congress < 85),
                  !(domain == "Social" & congress < 85))
@@ -66,28 +75,44 @@ Next, we standardized the scores of the ideal points and named the new variable 
 To make sure we were on the right track, we tested our z-standardization by taking the mean and the standard deviation of the ideal points.
 ```{r normalization and graphs}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Normalize the scores
 ideals <- ideals %>% 
   group_by(domain) %>% 
   mutate(dynamic_ideal_norm = (dynamic_ideal - mean(dynamic_ideal, na.rm = T)) / sd(dynamic_ideal, na.rm = T))
 
-# check if it worked
+# Check standardization
 mean(ideals$dynamic_ideal_norm) # ~0
 sd(ideals$dynamic_ideal_norm) # 1
 ```
 
-```{r filtering and test graph}
+Indicated by a comment in the original syntax, though, not in the paper, there are also presidential senators, who are identified with the state abbreviation _USA_, included in the roll call data. Thus, we also filtered them out. 
+```{r filtering out presidents}
 # Drop presidents
 ideals <- filter(ideals, !(state_abbrev == "USA"))
+```
 
-# Check polarity
-ideals <- ideals %>% 
-  mutate(party_code = factor(party_code))
 
+###Creating the graphs
+After having reworked the dataframe, the Caughey et al. produce a first graph. However, as they comment in the syntax, this is not the final output, but to check the polarity.
+
+From the original code, we had to deduce several steps First, they took the mean from the standardized ideal points and called the new variable _mean_ideal_. Then, they encoded the vector variable _party_code_ as a factor, presumably since the party code is a categorical variable and, therefore, has no numerical value.
+
+It is explained neither in the paper, nor in the original syntax, that the dataset includes not only Republicans and Democrats, but also Conservatives and Independents. As the paper only focuses on polarization between Republican and Democratic senators, the other party members will need to be filtered out. After consulting the voteview website and looking at our data, we were able to figure out that the party codes for Republicans and Democrats were 100 and 200, respectively, while Conservatives were identified by 212 and Independents by 328.
+
+We plotted our graph accordingly and were able to see the polarization of the senator's ideal points based on the issue domains. However, it is not clear to us why Caughey et al. had to check for polarity if the final graph was supposed to show exactly the polarization in Congress anyway.
+```{r check polarity and test graph}
+# Create a variable that is the mean of the ideal points
 party_means <- ideals %>%
   group_by(domain, party_code, congress) %>% 
   mutate(mean_ideal = mean(dynamic_ideal_norm))
 
-#     party codes: 100 for Democrats, 200 for Republicans, 212 for Conservatives, 328 for Independent
+# Change party code variable into a factor
+party_means <- party_means %>% 
+  mutate(party_code = factor(party_code))
+
+# Plot to check for polarity
+# Only include Democrats and Republicans (e.g. party codes 100 and 200)
 p1 <- ggplot(subset(party_means, party_code %in% c(100, 200))) +
   geom_line(mapping = aes(x = congress, y = mean_ideal, color = party_code)) +
   facet_wrap(~ domain)
@@ -98,19 +123,19 @@ p1
 
 The ideal point estimates are coded so that larger scores are conservative and are standardized to have zero mean and unit variance across senator-con- gresses. Finally, for each term, we calculated the ideal-point differences between senators from the same state but different parties, and then we averaged the domain-specifc differences within each term.
 ```{r filtering and final graph}
-#filter out the Conservative and Independent party members
+# Filter out the Conservative and Independent party members
 ideals <- filter(ideals, !(party_code == 212), !(party_code == 328))
 
-#filter out the states that are represented by senators of only one party
+# Filter out the states that are represented by senators of only one party
 ideals <- ideals %>% 
   group_by(congress, state_abbrev) %>% 
   mutate(two_party = length(unique(party_code)) > 1)
 
-#keep the states represented by both parties
+# Keep the states represented by both parties
 ideals <- ideals %>% 
   filter(!(two_party == F))
 
-#Take the within-state-party average, for the case in which there's more than
+# Take the within-state-party average, for the case in which there's more than
 # one senator/member in a state-congress pair.    
 ideals <- ideals %>% 
   group_by(congress, state_abbrev, party_code) %>% 
@@ -165,6 +190,5 @@ p2 <- ggplot(data = mean_diffs) +
   theme(plot.title = element_text(hjust = 0.5))
 
 p2
-  
 ```
 
